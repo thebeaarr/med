@@ -1,9 +1,8 @@
-import java.util.ArrayList; 
-import java.time.LocalDate ;
+import java.net.InetAddress;
+import java.net.InetSocketAddress ;
 import java.net.Socket;
-import java.net.InetSocketAddress;
-import java.util.Random;
-
+import java.time.LocalDate;
+import java.util.ArrayList;
 public class Target
 {
 	private String ipAddress; 
@@ -27,15 +26,37 @@ public class Target
 		this.totalTargets++;
 	}
 
+	// public Target()
+	// {
+	// 	this.ipAddress = "0.0.0.0";
+	// 	this.os = "unknown";
+	// 	this.hostname = "who?";
+	// 	this.lastScanDate = LocalDate.now();
+	// 	this.vulnerabilities = new ArrayList<>();
+	// 	this.openPorts = new ArrayList<>();
+	// 	this.totalTargets++;
+	// }
 	public Target()
 	{
-		this.ipAddress = "0.0.0.0";
-		this.os = "unknown";
-		this.hostname = "who?";
+		try
+		{
+			InetAddress local = InetAddress.getLocalHost();
+			this.ipAddress = local.getHostAddress();
+			this.hostname = local.getHostName();
+			this.os = System.getProperty("os.name");
+		}
+		catch (Exception e)
+		{
+			this.ipAddress = "127.0.0.1";
+			this.hostname = "unknown";
+			this.os = "unknown";
+		}
+
+		this.risklevel = "LOW";
 		this.lastScanDate = LocalDate.now();
 		this.vulnerabilities = new ArrayList<>();
 		this.openPorts = new ArrayList<>();
-		this.totalTargets++;
+		totalTargets++;
 	}
 
 	public Target(Target obj)
@@ -47,7 +68,7 @@ public class Target
 		this.lastScanDate = LocalDate.now();
 		this.vulnerabilities = new ArrayList<>( obj.vulnerabilities);
 		this.openPorts = new ArrayList(obj.openPorts);
-	}
+	}	
 	// let's just make it real and use some network programming 
 	public void scanPorts()
 	{
@@ -143,7 +164,7 @@ case 5432:
 	}
 	public static void main(String[] args)
 	{
-		Target var = new Target("127.0.0.1" , "purehater" , "kali-linux");
+		Target var = new Target();
 		var.scanPorts();
 		var.detectVulnerabilities();
 		var.generatereport();
